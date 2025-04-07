@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TickerState {
@@ -16,21 +16,25 @@ class TickerState {
 }
 
 class TickerController extends StateNotifier<TickerState> {
-  TickerController() : super(const TickerState(value: 0, isRunning: false));
-  Timer? _timer;
+  TickerController(this._createTicker) 
+      : _ticker = _createTicker(),
+        super(const TickerState(value: 0, isRunning: false));
+
+  final Ticker Function() _createTicker;
+  final Ticker _ticker;
 
   void start() {
     if (state.isRunning) return;
     state = state.copyWith(isRunning: true);
-    _timer = Timer.periodic(const Duration(milliseconds: 32), _onTick);
+    _ticker.start();
   }
 
-  void _onTick(Timer timer) {
-    state = state.copyWith(value: state.value + 1);
+  void _onTick(Duration elapsed) {
+    state = state.copyWith(value: elapsed.inMilliseconds.toDouble());
   }
 
   void pause() {
-    _timer?.cancel();
+    _ticker.stop();
     state = state.copyWith(isRunning: false);
   }
 
@@ -38,8 +42,16 @@ class TickerController extends StateNotifier<TickerState> {
     pause();
     state = state.copyWith(value: 0);
   }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    super.dispose();
+  }
 }
 
 final tickerProvider = StateNotifierProvider<TickerController, TickerState>(
-  (ref) => TickerController(),
+  (ref) {
+    return TickerController(() => Ticker(ref.read(tickerProvider.notifier)._onTick));
+  },
 );

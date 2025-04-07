@@ -11,26 +11,18 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          _buildCanvas(),
-          _buildTickerControls(),
+          Center(
+            child: CanvasWidget(),
+          ),
+          Positioned(
+            bottom: 5,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: TickerControls(),
+            ),
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCanvas() {
-    return Center(
-      child: CanvasWidget(),
-    );
-  }
-
-  Widget _buildTickerControls() {
-    return Positioned(
-      bottom: 5,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: TickerControls(),
       ),
     );
   }

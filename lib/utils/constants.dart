@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 const double goldenRatio = 1.618;
 const double goldenAngle = 2.399963229728653; // ≈137.5° in radians
-const double baseAngularSpeed = 50.0;
+const double baseAngularSpeed = 0.5;
 const double initialOffset = 10;
 const double activationDuration = 2;
 const int numberOfOrbs = 21;
