@@ -14,38 +14,45 @@ class TickerControls extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildControlButton(
+        ControlButton(
           icon: Icons.play_arrow,
           message: 'Start',
           onPressed: tickerState.isRunning ? null : controller.start,
         ),
-        _buildControlButton(
+        ControlButton(
           icon: Icons.pause,
           message: 'Pause',
           onPressed: tickerState.isRunning ? controller.pause : null,
         ),
-        _buildControlButton(
+        ControlButton(
           icon: Icons.refresh,
           message: 'Reset',
-          onPressed:
-              tickerState.value != 0
-                  ? () {
-                    // Reset ticker
-                    controller.reset();
-                    // Reset orb states as well by calling resetAll on the notifier.
-                    ref.read(orbStatesProvider.notifier).resetAll();
-                  }
-                  : null,
+          onPressed: tickerState.value != 0
+              ? () {
+                  controller.reset();
+                  ref.read(orbStatesProvider.notifier).resetAll();
+                }
+              : null,
         ),
       ],
     );
   }
+}
 
-  Widget _buildControlButton({
-    required IconData icon,
-    required String message,
-    required VoidCallback? onPressed,
-  }) {
+class ControlButton extends StatelessWidget {
+  final IconData icon;
+  final String message;
+  final VoidCallback? onPressed;
+
+  const ControlButton({
+    Key? key,
+    required this.icon,
+    required this.message,
+    required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Tooltip(

@@ -10,19 +10,27 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Stack(
-        // Use a Stack to overlay widgets
         children: [
-          Center(
-            // Your existing Center widget
-            child: Center(child: CanvasWidget()),
-          ),
-          Positioned(
-            bottom: 5,
-            left: 0,
-            right: 0,
-            child: Center(child: TickerControls()),
-          ),
+          _buildCanvas(),
+          _buildTickerControls(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCanvas() {
+    return Center(
+      child: CanvasWidget(),
+    );
+  }
+
+  Widget _buildTickerControls() {
+    return Positioned(
+      bottom: 5,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: TickerControls(),
       ),
     );
   }

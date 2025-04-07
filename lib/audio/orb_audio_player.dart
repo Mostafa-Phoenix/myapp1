@@ -12,17 +12,7 @@ class OrbAudioPlayerManager {
 
     for (int i = 0; i < numberOfOrbs; i++) {
       try {
-        final player = AudioPlayer();
-        
-        // Configure for low latency
-        await player.setPlayerMode(PlayerMode.lowLatency);
-        await player.setReleaseMode(ReleaseMode.stop); // Stop when finished
-
-        // Preload audio as bytes for fastest access
-        final byteData = await rootBundle.load('audio/$i.wav');
-        final bytes = byteData.buffer.asUint8List();
-        await player.setSource(BytesSource(bytes));
-
+        final player = await _initializePlayer(i);
         players.add(player);
       } catch (e, stack) {
         debugPrint('Error initializing orb $i: $e\n$stack');
@@ -32,13 +22,24 @@ class OrbAudioPlayerManager {
     return OrbAudioPlayerManager._(players);
   }
 
+  static Future<AudioPlayer> _initializePlayer(int orbIndex) async {
+    final player = AudioPlayer();
+    await player.setPlayerMode(PlayerMode.lowLatency);
+    await player.setReleaseMode(ReleaseMode.stop);
+
+    final byteData = await rootBundle.load('audio/$orbIndex.wav');
+    final bytes = byteData.buffer.asUint8List();
+    await player.setSource(BytesSource(bytes));
+
+    return player;
+  }
+
   Future<void> playOrbSound(int orbIndex) async {
     if (orbIndex < 0 || orbIndex >= _audioPlayers.length) return;
 
     final player = _audioPlayers[orbIndex];
     try {
-      // Immediately restart playback without stopping first
-      await player.resume(); // Or player.play() depending on behavior
+      await player.resume();
     } catch (e, stack) {
       debugPrint('Error playing orb $orbIndex: $e\n$stack');
     }

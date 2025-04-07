@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myapp/audio/orb_audio_player.dart'; // <--- Update with correct path
+import 'package:myapp/audio/orb_audio_player.dart'; // Ensure this path is correct
+import 'package:myapp/utils/constants.dart'; // Import constants
 
 /// Represents an orb’s current state.
 class OrbState {
@@ -23,8 +24,6 @@ class OrbState {
   }
 }
 
-const int numberOfOrbs = 21;
-
 class OrbStatesNotifier extends StateNotifier<List<OrbState>> {
   late final Future<OrbAudioPlayerManager> _audioManagerFuture;
   OrbAudioPlayerManager? _audioManager;
@@ -40,6 +39,11 @@ class OrbStatesNotifier extends StateNotifier<List<OrbState>> {
   }
 
   Future<void> trigger(int orbIndex, double currentTime) async {
+    _updateOrbState(orbIndex, currentTime);
+    await _playOrbSound(orbIndex);
+  }
+
+  void _updateOrbState(int orbIndex, double currentTime) {
     state = [
       for (final orb in state)
         if (orb.orbIndex == orbIndex)
@@ -47,7 +51,9 @@ class OrbStatesNotifier extends StateNotifier<List<OrbState>> {
         else
           orb,
     ];
+  }
 
+  Future<void> _playOrbSound(int orbIndex) async {
     try {
       final manager = await _audioManagerFuture;
       await manager.playOrbSound(orbIndex);
